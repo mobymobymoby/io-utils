@@ -154,4 +154,5 @@ write하고 즉시 reboot 후에 바뀐 내용이 적용되어있을지 테스�
     - 정상적인 shutdown 시에는 디스크에 반영될 시간이 충분한 듯..
     - 강제 shutdown 테스트 결과 부팅 시에 journaling 관련 로그가 뜨고, 아쉽게도 disk에는 제대로 업데이트가 되어 있음
         sudo dd if=/dev/sdb4 of=dump bs=1 count=4K && xxd dump
-""
+        - /dev/sdb4는 fs 가 없으니 journaling 안하는 게 맞고
+"""
