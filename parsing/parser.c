@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define FALSE 0
 #define TRUE 1
@@ -41,16 +42,19 @@ int test(char *str, int answer[], int count) {
     int parsed[MAX_ARR], idx = 0, i;
     int num;
 
-    char *ptr, *stop;
+    char *ptr, *stop, *end;
     ptr = str;
+    end = str + strlen(str);
 
-    num = strtol(ptr, &stop, 10);
-    parsed[idx++] = num;
-
+    while (ptr < end) {
+        num = strtol(ptr, &stop, 10);
+        if (ptr != stop) {
+            parsed[idx++] = num;
+        }
+        
+        ptr = stop + 1;
+    }
     
-
-
-
     if (!check(parsed, idx, answer, count)) {
         printf("  Parsed: ");
         for (i = 0; i < idx; i++)   printf("%8d", parsed[i]);
@@ -59,14 +63,23 @@ int test(char *str, int answer[], int count) {
         for (i = 0; i < count; i++) printf("%8d", answer[i]);
         printf("\n");
         printf("------------------------------------------------------------------\n");
+        return FALSE;
     }
+    return TRUE;
 }
 
 int main() {
     int i;
     int num_tests = sizeof(counts) / sizeof(int);
+    int flag = TRUE;
     
     for (i = 0; i < num_tests; i++) {
-        test(strings[i], answers[i], counts[i]);
+        flag &= test(strings[i], answers[i], counts[i]);
+    }
+
+
+
+    if (flag) {
+        printf("All pass\n");
     }
 }
