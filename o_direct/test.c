@@ -8,7 +8,9 @@
 #include <assert.h>
 #include <time.h>
 
+// 플래시면 다를 수도 있을 것 같음
 #define SECTOR_SIZE 512
+
 #define X(ptr) ((unsigned long long)(ptr))
 #define ALIGN(ptr, by) (void *)(X((char *)ptr + (by) - 1) & ~((by) - 1))
 
