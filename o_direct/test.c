@@ -24,7 +24,11 @@ int main() {
     // buf 주소 랜덤으로 할당하기 위함 -> test 파일의 내용이 실행할 때마다 바뀜
     malloc(rand() % SECTOR_SIZE);
 
+alloc:
     buf = (char *)malloc(SECTOR_SIZE + SECTOR_SIZE - 1);
+    if (X(buf) % SECTOR_SIZE == 0)
+        goto alloc;
+    
     a_buf = ALIGN(buf, SECTOR_SIZE);
     assert(X(a_buf) % SECTOR_SIZE == 0);
 
