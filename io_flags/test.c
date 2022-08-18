@@ -50,4 +50,6 @@ alloc:
     // O_DIRECT 로 연 파일은 IO 할 때에 ptr, size, offset 모두 디바이스의 섹터 사이즈의 배수가 되어야 함
     res = pwrite(fd, a_buf, SECTOR_SIZE, 0);
     printf("totally aligned: %d\n", res);
+
+    return 0;
 }
