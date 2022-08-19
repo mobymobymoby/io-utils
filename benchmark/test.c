@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include "benchmark.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,7 +40,7 @@ uint64_t res;
 
 // sudo dd if=/dev/urandom of=/dev/sdb4 bs=4M count=1
 void open_file() {
-    fd = open("/dev/sdb4", O_RDWR);
+    fd = open("/dev/sdb4", O_RDWR | O_DIRECT);
     if (fd < 0) exit(1);
 }
 
