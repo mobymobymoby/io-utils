@@ -41,6 +41,7 @@ uint64_t res;
 // sudo dd if=/dev/urandom of=/dev/sdb4 bs=4M count=1
 void open_file() {
     fd = open("/dev/sdb4", O_RDWR | O_DIRECT);
+    printf("fd: %d\n", fd);
     if (fd < 0) exit(1);
 }
 
