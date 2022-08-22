@@ -12,6 +12,8 @@
 #define PAGE_SIZE (4 * 1024 * 1024)
 #define BLOCK_CNT (PAGE_SIZE / BLOCK_SIZE)
 #define SECTOR_SIZE 512
+#define ITER 1
+
 int fd;
 char buf[PAGE_SIZE] __attribute__ ((aligned (SECTOR_SIZE)));
 char buf_block[PAGE_SIZE] __attribute__ ((aligned (SECTOR_SIZE)));
@@ -50,6 +52,7 @@ void open_file() {
 }
 
 void flush() {
+    // return;
     sync();
     int f = open("/proc/sys/vm/drop_caches", O_WRONLY);
     (void)write(f, "1", 1);
@@ -125,19 +128,8 @@ int main() {
     open_file();
     read_disk();
 
-    printf("read_disk\n");
-    for (i = 0; i < 10; i++) {
-        flush();
-        BEGIN(x, BEFORE);
-        read_disk();
-        END(x);
-        t += TIME(x);
-    }
-    printf("%lu\n", t);
-    t = 0;
-
     printf("read_disk_by_block_2\n");
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < ITER; i++) {
         flush();
         BEGIN(x, BEFORE);
         read_disk_by_block_2();
@@ -147,9 +139,21 @@ int main() {
     printf("%lu\n", t);
     t = 0;
 
+    printf("read_disk\n");
+    for (i = 0; i < ITER; i++) {
+        flush();
+        BEGIN(x, BEFORE);
+        read_disk();
+        END(x);
+        t += TIME(x);
+    }
+    printf("%lu\n", t);
+    t = 0;
+
+
 
     printf("read_disk_by_block\n");
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < ITER; i++) {
         flush();
         BEGIN(x, BEFORE);
         read_disk_by_block();
@@ -160,7 +164,7 @@ int main() {
     t = 0;
 
     printf("rev_read_disk_by_block\n");
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < ITER; i++) {
         flush();
         BEGIN(x, BEFORE);
         rev_read_disk_by_block();
@@ -171,7 +175,7 @@ int main() {
     t = 0;
 
     printf("zigzag_read_disk_by_block\n");
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < ITER; i++) {
         flush();
         BEGIN(x, BEFORE);
         zigzag_read_disk_by_block();
@@ -182,7 +186,7 @@ int main() {
     t = 0;
 
     printf("random_read_disk_by_block\n");
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < ITER; i++) {
         flush();
         BEGIN(x, BEFORE);
         random_read_disk_by_block();
@@ -197,7 +201,7 @@ int main() {
     assert(memcmp(buf, buf_random, PAGE_SIZE) == 0);
 
     // printf("clocck_gettime: read_disk_by_block\n");
-    // for (i = 0; i < 10; i++) {
+    // for (i = 0; i < ITER; i++) {
     //     flush();
     //     T_BEGIN(x, BEFORE);
     //     read_disk_by_block();
@@ -206,7 +210,7 @@ int main() {
     // }
 
     // printf("clocck_gettime: read_disk\n");
-    // for (i = 0; i < 10; i++) {
+    // for (i = 0; i < ITER; i++) {
     //     flush();
     //     T_BEGIN(x, BEFORE);
     //     read_disk();
