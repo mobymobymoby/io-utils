@@ -11,14 +11,14 @@
 #define BLOCK_SIZE (32 * 1024)
 #define PAGE_SIZE (4 * 1024 * 1024)
 #define BLOCK_CNT (PAGE_SIZE / BLOCK_SIZE)
-
+#define SECTOR_SIZE 512
 int fd;
-char buf[PAGE_SIZE];
-char buf_block[PAGE_SIZE];
-char buf_rev[PAGE_SIZE];
-char buf_zigzag[PAGE_SIZE];
-char buf_random[PAGE_SIZE];
-char buf_x[PAGE_SIZE];
+char buf[PAGE_SIZE] __attribute__ ((aligned (SECTOR_SIZE)));
+char buf_block[PAGE_SIZE] __attribute__ ((aligned (SECTOR_SIZE)));
+char buf_rev[PAGE_SIZE] __attribute__ ((aligned (SECTOR_SIZE)));
+char buf_zigzag[PAGE_SIZE] __attribute__ ((aligned (SECTOR_SIZE)));
+char buf_random[PAGE_SIZE] __attribute__ ((aligned (SECTOR_SIZE)));
+char buf_x[PAGE_SIZE] __attribute__ ((aligned (SECTOR_SIZE)));
 int seq[] = {
     8, 105, 116, 3, 50, 25, 41, 35, 
     20, 57, 53, 4, 119, 79, 123, 102, 
@@ -40,7 +40,11 @@ uint64_t res;
 
 // sudo dd if=/dev/urandom of=/dev/sdb4 bs=4M count=1
 void open_file() {
-    fd = open("/dev/sdb4", O_RDWR | O_DIRECT);
+    fd = open("/dev/sdb4", O_RDWR 
+    #ifdef DIRECT 
+              | O_DIRECT
+    #endif
+    );
     printf("fd: %d\n", fd);
     if (fd < 0) exit(1);
 }
@@ -121,6 +125,17 @@ int main() {
     open_file();
     read_disk();
 
+    printf("read_disk\n");
+    for (i = 0; i < 10; i++) {
+        flush();
+        BEGIN(x, BEFORE);
+        read_disk();
+        END(x);
+        t += TIME(x);
+    }
+    printf("%lu\n", t);
+    t = 0;
+
     printf("read_disk_by_block_2\n");
     for (i = 0; i < 10; i++) {
         flush();
@@ -138,17 +153,6 @@ int main() {
         flush();
         BEGIN(x, BEFORE);
         read_disk_by_block();
-        END(x);
-        t += TIME(x);
-    }
-    printf("%lu\n", t);
-    t = 0;
-
-    printf("read_disk\n");
-    for (i = 0; i < 10; i++) {
-        flush();
-        BEGIN(x, BEFORE);
-        read_disk();
         END(x);
         t += TIME(x);
     }
