@@ -11,8 +11,8 @@
 #define BLOCK_SIZE (32 * 1024)
 #define PAGE_SIZE (4 * 1024 * 1024)
 #define BLOCK_CNT (PAGE_SIZE / BLOCK_SIZE)
-#define SECTOR_SIZE 512
-#define ITER 1
+#define SECTOR_SIZE 4096
+#define ITER 10
 
 int fd;
 char buf[PAGE_SIZE] __attribute__ ((aligned (SECTOR_SIZE)));
@@ -38,11 +38,13 @@ int seq[] = {
     111, 66, 117, 80, 45, 107, 65, 86, 
     32, 118, 103, 62, 89, 114, 100, 61, 9
 };
+
+char *path;
 uint64_t res;
 
 // sudo dd if=/dev/urandom of=/dev/sdb4 bs=4M count=1
 void open_file() {
-    fd = open("/dev/sdb4", O_RDWR 
+    fd = open(path, O_RDWR 
     #ifdef DIRECT 
               | O_DIRECT
     #endif
@@ -121,23 +123,19 @@ void random_read_disk_by_block() {
 }
 
 
-int main() {
+int main(int argc, char *argv[]) {
+    if (argc != 2){
+        printf("usage\n");
+        return -1;
+    }
+
+    path = argv[1];
+
     timer x;
     int i;
     uint64_t t = 0;
     open_file();
     read_disk();
-
-    printf("read_disk_by_block_2\n");
-    for (i = 0; i < ITER; i++) {
-        flush();
-        BEGIN(x, BEFORE);
-        read_disk_by_block_2();
-        END(x);
-        t += TIME(x);
-    }
-    printf("%lu\n", t);
-    t = 0;
 
     printf("read_disk\n");
     for (i = 0; i < ITER; i++) {
@@ -150,7 +148,16 @@ int main() {
     printf("%lu\n", t);
     t = 0;
 
-
+    printf("read_disk_by_block_2\n");
+    for (i = 0; i < ITER; i++) {
+        flush();
+        BEGIN(x, BEFORE);
+        read_disk_by_block_2();
+        END(x);
+        t += TIME(x);
+    }
+    printf("%lu\n", t);
+    t = 0;
 
     printf("read_disk_by_block\n");
     for (i = 0; i < ITER; i++) {
