@@ -146,6 +146,9 @@ read byte 1 0
 /dev/sdbN 에서 특정 바이트만 수정하는 것도 가능하고,
 그냥 일반 파일처럼 읽고 쓸 수 있는 듯.
 fs 내부적으로는 block 단위로 접근하고 있겠지?
+- 음.. 커널에서 device 파일인지 일반 파일인지에 따라 다르게 동작할텐데, block device driver 단에서 byte-level access 도 지원을 해주나?
+- TODO: device driver 코드 분석 (character device, block device) 
+
 
 - fsync 안하고 바로 끄면 디스크에 바로 반영이 안되어있겠지?
 테스트해보고 싶은데 그냥 write 끝나자마자 프로세스 종료시키는 것으로는 불충분함. 
