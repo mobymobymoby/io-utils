@@ -6,20 +6,20 @@ disk 에서 4MB 데이터를 읽어올 때, 읽어들이는 순서에 따라 성
 
 ### hdd
 ```bash
-gcc test.c -O -g && sudo ./a.out ??
+$ gcc test.c -O && sudo ./a.out /dev/sdb4
 fd: 3
 read_disk
-391050612
+401932424
 read_disk_by_block_2
-338576706
+338244502
 read_disk_by_block
-328194626
+333930780
 rev_read_disk_by_block
-1380268114
+1237047926
 zigzag_read_disk_by_block
-446042038
+447774350
 random_read_disk_by_block
-1353263342
+1304554612
 ```
 
 ### ssd
@@ -44,21 +44,22 @@ random_read_disk_by_block
 
 ### hdd
 ```bash
-gcc test.c -O -g -DDIRECT && sudo ./a.out ??
+$ gcc test.c -O -DDIRECT && sudo ./a.out /dev/sdb4
 fd: 3
 read_disk
-338719894
+351216644
 read_disk_by_block_2
-750469758
+707738728
 read_disk_by_block
-386980886
+411902130
 rev_read_disk_by_block
-1290160726
+1220047052
 zigzag_read_disk_by_block
-1295194300
+1195465138
 random_read_disk_by_block
-1546415232
+1429763264
 ```
+
 ### ssd
 ```bash
 $ gcc -O -DDIRECT test.c && sudo ./a.out /dev/nvme0n1p3
